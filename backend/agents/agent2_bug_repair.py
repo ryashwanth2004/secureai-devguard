@@ -9,8 +9,7 @@ import difflib
 import re
 from pathlib import Path
 from security_rules.rules import SECURITY_RULES
-
-STUDENTHUB_SRC = Path(__file__).parent.parent / "studenthub_src"
+from engine.paths import get_studenthub_src_dir
 
 def strip_comments_keep_lines(code: str) -> str:
     """Strip comments while preserving exact line counts so line numbers stay accurate."""
@@ -40,7 +39,7 @@ def find_enclosing_function(code: str, line_no: int) -> str:
 async def run_agent2(incident, agent1_summary: dict) -> dict:
     """Agent 2: Detects bugs in the identified source file and produces a verified code patch."""
     affected_file = agent1_summary.get("affected_file", "cart_service.py")
-    file_path = STUDENTHUB_SRC / affected_file
+    file_path = get_studenthub_src_dir() / affected_file
     
     if not file_path.exists():
         return {

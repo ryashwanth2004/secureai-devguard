@@ -20,27 +20,28 @@ from agents.agent2_bug_repair import run_agent2
 from agents.agent3_risk_deploy import run_agent3
 from engine.patch_validator import validate_patch
 from routers.sse import notify_clients
+from engine.paths import get_studenthub_src_dir
 
 logger = logging.getLogger("orchestrator")
 
-STUDENTHUB_SRC = Path(__file__).parent.parent / "studenthub_src"
-BACKUP_DIR = STUDENTHUB_SRC / "backup"
-
 async def apply_patches_to_studenthub(patches: list):
     """Writes candidate patch modifications directly to StudentHub source files."""
+    src_dir = get_studenthub_src_dir()
     for patch in patches:
         file_name = patch.get("file_name")
         patched_code = patch.get("patched_code")
         if file_name and patched_code:
-            target = STUDENTHUB_SRC / file_name
+            target = src_dir / file_name
             target.write_text(patched_code, encoding="utf-8")
             logger.info(f"Successfully applied patch to {file_name}")
 
 def reset_studenthub_src_to_backup():
     """Resets all studenthub source files back to their original buggy baseline from backup."""
-    if BACKUP_DIR.exists():
-        for backup_file in BACKUP_DIR.glob("*.py"):
-            target = STUDENTHUB_SRC / backup_file.name
+    src_dir = get_studenthub_src_dir()
+    backup_dir = src_dir / "backup"
+    if backup_dir.exists():
+        for backup_file in backup_dir.glob("*.py"):
+            target = src_dir / backup_file.name
             shutil.copy2(str(backup_file), str(target))
         logger.info("Reset StudentHub source files to pristine demonstration state.")
 

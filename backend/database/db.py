@@ -5,7 +5,11 @@ from .models import Base
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./secureai.db")
+is_vercel = os.getenv("VERCEL") == "1" or "VERCEL" in os.environ
+db_path = "/tmp/secureai.db" if is_vercel else "./secureai.db"
+default_db_url = f"sqlite+aiosqlite:///{db_path}"
+
+DATABASE_URL = os.getenv("DATABASE_URL", default_db_url)
 
 engine = create_async_engine(DATABASE_URL, echo=False)
 AsyncSessionLocal = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)

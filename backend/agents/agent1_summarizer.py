@@ -7,7 +7,10 @@ identifies affected modules, source files, and produces an in-depth structured t
 from pathlib import Path
 import re
 
-STUDENTHUB_SRC = Path(__file__).parent.parent / "studenthub_src"
+from engine.paths import get_studenthub_src_dir
+
+def get_src_dir() -> Path:
+    return get_studenthub_src_dir()
 
 PAGE_TO_FILE = {
     "cart": "cart_service.py",
@@ -88,7 +91,7 @@ async def run_agent1(incident) -> dict:
         else:
             affected_file = "cart_service.py"
             
-    file_path = STUDENTHUB_SRC / affected_file
+    file_path = get_src_dir() / affected_file
     source_code = ""
     lines = []
     if file_path.exists():

@@ -52,7 +52,8 @@ async def lifespan(app: FastAPI):
             logger.info(f"Default administrator account '{admin_user}' provisioned.")
 
     # 3. Synchronize StudentHub baseline source files from backup
-    src_dir = Path(__file__).parent / "studenthub_src"
+    from engine.paths import get_studenthub_src_dir
+    src_dir = get_studenthub_src_dir()
     backup_dir = src_dir / "backup"
     if backup_dir.exists():
         for bf in backup_dir.glob("*.py"):
