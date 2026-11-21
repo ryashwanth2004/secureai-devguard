@@ -1,11 +1,25 @@
 // Determine backend endpoint:
-// 1. If VITE_API_URL is explicitly set during build or runtime, use it.
-// 2. If running in browser on production domain (e.g. *.vercel.app, external host/devices), use the live Cloudflare tunnel URL.
-// 3. Otherwise fall back to localhost:8000 for local development.
+// 1. Query parameter ?api=... or saved localStorage ('SECUREAI_API_URL') for dynamic switching.
+// 2. VITE_API_URL if set during build/runtime.
+// 3. Fallback to active Cloudflare tunnel URL on public domains (e.g. Vercel, mobile devices).
+// 4. Default to http://localhost:8000 on local development.
 
-const CLOUDFLARE_TUNNEL_URL = 'https://detailed-suggestion-awareness-commonly.trycloudflare.com';
+const CLOUDFLARE_TUNNEL_URL = 'https://learning-reasonable-estimates-notes.trycloudflare.com';
 
 function resolveApiBaseUrl(): string {
+  if (typeof window !== 'undefined') {
+    const params = new URLSearchParams(window.location.search);
+    const queryApi = params.get('api_url') || params.get('api');
+    if (queryApi) {
+      localStorage.setItem('SECUREAI_API_URL', queryApi);
+      return queryApi;
+    }
+    const saved = localStorage.getItem('SECUREAI_API_URL');
+    if (saved && saved.trim() !== '') {
+      return saved;
+    }
+  }
+
   const envUrl = import.meta.env.VITE_API_URL;
   if (envUrl && envUrl.trim() !== '') {
     return envUrl;
