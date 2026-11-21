@@ -80,13 +80,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Register route handlers
+# Register route handlers (with /api and without in case of serverless rewrite stripping)
 app.include_router(incidents.router, prefix="/api/incidents", tags=["Incidents & Reporting"])
 app.include_router(analysis.router, prefix="/api/analysis", tags=["Multi-Agent Analysis"])
 app.include_router(deployment.router, prefix="/api/deployment", tags=["Secure Deployment"])
 app.include_router(admin.router, prefix="/api/admin", tags=["Admin & Telemetry"])
 app.include_router(sse.router, prefix="/api/events", tags=["Real-time SSE Events"])
 
+app.include_router(incidents.router, prefix="/incidents", tags=["Incidents & Reporting"])
+app.include_router(analysis.router, prefix="/analysis", tags=["Multi-Agent Analysis"])
+app.include_router(deployment.router, prefix="/deployment", tags=["Secure Deployment"])
+app.include_router(admin.router, prefix="/admin", tags=["Admin & Telemetry"])
+app.include_router(sse.router, prefix="/events", tags=["Real-time SSE Events"])
+
+@app.get("/")
+@app.get("/health")
 @app.get("/api/health")
 async def health_check():
     return {
